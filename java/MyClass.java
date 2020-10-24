@@ -6,6 +6,7 @@ import java.nio.file.Path;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -37,9 +38,10 @@ public class MyClass {
     String inputFilePath = "./lorem.txt";
     try (BufferedReader br = new BufferedReader(new FileReader(inputFilePath))) {
 
-        document.add(new TextField("content", br));
-        writer.addDocument(document);
-        writer.close();
+        // document.add(new TextField("content", br));
+        // document.add(new TextField("path", "./lorem.txt", Field.Store.YES));
+        // writer.addDocument(document);
+        // writer.close();
 
     } catch (IOException e) {
         e.printStackTrace();
@@ -69,5 +71,10 @@ public class MyClass {
     query = parser.parse("lorem");
     results = searcher.search(query, 5);
     System.out.println("Hits for lorem -->" + results.totalHits);
+    System.out.println(results.scoreDocs[0]);
+    System.out.println(results.scoreDocs[1]);
+    System.out.println(reader.document(results.scoreDocs[0].doc).get("path"));
+    System.out.println(reader.document(results.scoreDocs[1].doc).get("path"));
+    System.out.println(reader.document(results.scoreDocs[1].doc).get("content"));
   }
 }
