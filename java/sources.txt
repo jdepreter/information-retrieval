@@ -1,1 +1,17 @@
 https://examples.javacodegeeks.com/core-java/apache/lucene/apache-lucene-hello-world-example/
+
+Interesting queries:
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/Query.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/BlendedTermQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/BooleanQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/BoostQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/ConstantScoreQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/DisjunctionMaxQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/DocValuesFieldExistsQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/MultiPhraseQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/MultiTermQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/PhraseQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/spans/SpanQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/SynonymQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/TermInSetQuery.html
+https://lucene.apache.org/core/8_6_3/core/org/apache/lucene/search/TermQuery.html
