@@ -5,6 +5,10 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.xml.parsers.ParserConfigurationException;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.StoredField;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.analysis.StopwordAnalyzerBase;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -26,24 +30,45 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.xml.sax.SAXException;
 
 public class Indexer {
 
-    static IndexWriter writer;
-    static Directory directory;
-    static IndexWriterConfig config;
-    static StandardAnalyzer standardAnalyzer;
+    IndexWriter writer;
+    Directory directory;
+    IndexWriterConfig config;
+    StandardAnalyzer standardAnalyzer;
 
     public Indexer(String relativeIndexPath) throws IOException {
         standardAnalyzer = new StandardAnalyzer();
         Path path = FileSystems.getDefault().getPath(".", relativeIndexPath);
         directory = FSDirectory.open(path);
         config = new IndexWriterConfig(standardAnalyzer);
+        writer = new IndexWriter(directory, config);
     }
 
-    public static void addDocument(Document doc) throws IOException {
-        writer = new IndexWriter(directory, config);
+    public void addXMLDoc(String path) {
+        try {
+            Map<String, String> result = xmlReader.xmlToMap(path);
+            Document doc = new Document();
+            doc.add(new StoredField("path", path));
+            doc.add(new TextField("questionTitle", result.get("questionTitle"), Field.Store.YES));
+            doc.add(new TextField("questionBody", result.get("questionBody"), Field.Store.NO));
+            doc.add(new TextField("answers", result.get("answers"), Field.Store.NO));
+            doc.add(new TextField("acceptedAnswer", result.get("acceptedAnswer"), Field.Store.NO));
+            addDocument(doc);
+
+        } catch (SAXException | ParserConfigurationException | IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public void addDocument(Document doc) throws IOException {
         writer.addDocument(doc);
+    }
+
+    public void close() throws IOException {
         writer.close();
     }
 
@@ -51,7 +76,7 @@ public class Indexer {
      * Stackoverflow query implementation: Idea: boost scores if term is in accepted
      * answer or in question
      */
-    public static void query(String queryString) throws IOException, ParseException {
+    public void query(String queryString) throws IOException, ParseException {
         //
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
@@ -73,14 +98,16 @@ public class Indexer {
 
         // TopDocs results = searcher.search(pq, 5);
         // System.out.println(results.totalHits);
-        String[] temp = { "content", "path" };
+        String[] temp = { "questionBody", "questionTitle", "answers", "acceptedAnswer" };
         Map<String, Float> mapding = new HashMap<String, Float>();
-        mapding.put("content", (float) 0.5);
-        mapding.put("path", (float) 2);
+        mapding.put("questionBody", (float) 1);
+        mapding.put("questionTitle", (float) 2);
+        mapding.put("answers", (float) 1);
+        mapding.put("acceptedAnswer", (float) 2);
         MultiFieldQueryParser parser = new MultiFieldQueryParser(temp, standardAnalyzer, mapding);
         Query q = parser.parse(queryString);
         System.out.println(searcher.search(q, 5).scoreDocs[0]);
-        System.out.println(searcher.search(q, 5).scoreDocs[1]);
+        // System.out.println(searcher.search(q, 5).scoreDocs[1]);
         
     }
 
@@ -96,6 +123,8 @@ public class Indexer {
 
     public static void main(String[] args) throws IOException, ParseException {
         Indexer i = new Indexer("index");
-        i.query("lorem.txt");
+        i.addXMLDoc("./dump/xml/63260067.xml");
+        i.close();
+        i.query("variables");
     }
 }
