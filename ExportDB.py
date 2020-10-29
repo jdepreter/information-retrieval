@@ -1,4 +1,5 @@
 import sqlite3
+from dicttoxml import dicttoxml 
 
 
 """
@@ -50,12 +51,14 @@ class MessageSplitter():
             } for m in selector]
         return answers
 
-    def test(self):
-        selector = self.c.execute(
-            "SELECT * from messages WHERE PostTypeId = 5 LIMIT 5")
-        return [i for i in selector]
+    def create_files(self):
+        for question in self.get_questions():
+            question["Answers"] = self.get_answers(question["Id"])
+            xml = dicttoxml(question).decode("utf-8")
+            with open(f"./dump/xml/{question['Id']}.xml", "w") as f:
+                print(xml, file=f)
+
 
 if __name__ == "__main__":
     p = MessageSplitter(data=R"./dump/messages.db")
-    print(p.test())
-    # print(p.get_answers(63259787))
+    p.create_files()
