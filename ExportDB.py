@@ -43,8 +43,7 @@ class MessageSplitter():
             f"SELECT * from messages WHERE PostTypeId = 2 AND ParentId = {parentId}")
         
         answers = [{
-            "Id": m[0], 
-            "ParentId": m[2], 
+            "Id": m[0],  
             "CreationDate": m[4], 
             "Body": m[7],
             "CommentCount": m[9]
