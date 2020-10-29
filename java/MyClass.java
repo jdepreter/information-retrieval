@@ -20,6 +20,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+
 public class MyClass {
 
   public static void main(String[] args) throws IOException, ParseException {
