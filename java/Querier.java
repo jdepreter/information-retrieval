@@ -32,60 +32,47 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.xml.sax.SAXException;
 
-public class Indexer {
 
-    IndexWriter writer;
+public class Querier {
+    
     Directory directory;
-    IndexWriterConfig config;
     StandardAnalyzer standardAnalyzer;
 
-    public Indexer(String relativeIndexPath) throws IOException {
+    public Querier(String relativeIndexPath) throws IOException {
         standardAnalyzer = new StandardAnalyzer();
         Path path = FileSystems.getDefault().getPath(".", relativeIndexPath);
         directory = FSDirectory.open(path);
-        config = new IndexWriterConfig(standardAnalyzer);
-        writer = new IndexWriter(directory, config);
     }
 
-    public void addXMLDoc(String path) {
-        try {
-            Map<String, String> result = xmlReader.xmlToMap(path);
-            Document doc = new Document();
-            doc.add(new StoredField("path", path));
-            doc.add(new TextField("questionTitle", result.get("questionTitle"), Field.Store.YES));
-            doc.add(new TextField("questionBody", result.get("questionBody"), Field.Store.NO));
-            doc.add(new TextField("answers", result.get("answers"), Field.Store.NO));
-            doc.add(new TextField("acceptedAnswer", result.get("acceptedAnswer"), Field.Store.NO));
-            addDocument(doc);
-
-        } catch (SAXException | ParserConfigurationException | IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+      /*
+     * Stackoverflow query implementation: Idea: boost scores if term is in accepted
+     * answer or in question
+     */
+    public void query(String queryString) throws IOException, ParseException {
+        //
+        IndexReader reader = DirectoryReader.open(directory);
+        IndexSearcher searcher = new IndexSearcher(reader);
+        
+        String[] temp = { "questionBody", "questionTitle", "answers", "acceptedAnswer" };
+        Map<String, Float> mapding = new HashMap<String, Float>();
+        mapding.put("questionBody", (float) 1);
+        mapding.put("questionTitle", (float) 2);
+        mapding.put("answers", (float) 1);
+        mapding.put("acceptedAnswer", (float) 2);
+        MultiFieldQueryParser parser = new MultiFieldQueryParser(temp, standardAnalyzer, mapding);
+        Query q = parser.parse(queryString);
+        
+        TopDocs results = searcher.search(q, 5);
+        for (int i = 0; i < results.totalHits.value; i++) {
+            System.out.println(results.scoreDocs[i]);
         }
-    }
-
-    public void addDocument(Document doc) throws IOException {
-        writer.addDocument(doc);
-    }
-
-    public void close() throws IOException {
-        writer.close();
-    }
-
-    @Override
-    public void finalize() {
-        try {
-            writer.close();
-            System.out.println("Closed Indexwriter in the finalizer");
-        } catch (IOException e) {
-            // ...
-        }
-    }
-
-    public static void main(String[] args) throws IOException, ParseException {
-        Indexer i = new Indexer("index");
-        i.addXMLDoc("./dump/xml/63260067.xml");
-        i.close();
+        
+        // System.out.println(searcher.search(q, 5).scoreDocs[1]);
         
     }
-}
+
+    public static void main(String[] args) {
+        Querier q = new Querier("index");
+        q.query("variables");
+    }
+}   
