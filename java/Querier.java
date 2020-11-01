@@ -50,6 +50,8 @@ public class Querier {
      */
     public void query(String queryString) throws IOException, ParseException {
         //
+        System.out.println("-------------------");
+        System.out.println("Query: " + queryString);
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
         
@@ -61,18 +63,22 @@ public class Querier {
         mapding.put("acceptedAnswer", (float) 2);
         MultiFieldQueryParser parser = new MultiFieldQueryParser(temp, standardAnalyzer, mapding);
         Query q = parser.parse(queryString);
-        
+        System.out.println(q.toString());
         TopDocs results = searcher.search(q, 5);
+        System.out.println("-------------------");
         for (int i = 0; i < results.totalHits.value; i++) {
             System.out.println(results.scoreDocs[i]);
+            System.out.println(reader.document(results.scoreDocs[i].doc).get("path"));
+            System.out.println(reader.document(results.scoreDocs[i].doc).get("questionTitle"));
+            System.out.println("-------------------");
         }
         
         // System.out.println(searcher.search(q, 5).scoreDocs[1]);
         
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, ParseException {
         Querier q = new Querier("index");
-        q.query("variables");
+        q.query("const");
     }
 }   

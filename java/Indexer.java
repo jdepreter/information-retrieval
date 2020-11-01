@@ -84,6 +84,8 @@ public class Indexer {
 
     public static void main(String[] args) throws IOException, ParseException {
         Indexer i = new Indexer("index");
+        i.addXMLDoc("./dump/xml/63260064.xml");
+        i.addXMLDoc("./dump/xml/63260065.xml");
         i.addXMLDoc("./dump/xml/63260067.xml");
         i.close();
         
