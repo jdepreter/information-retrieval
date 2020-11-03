@@ -4,6 +4,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Arrays;
 
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.lucene.document.Field;
@@ -70,11 +71,11 @@ public class Querier {
         return q;
     }
 
-    private Query BooleanQ(String queryString) throws IOException, ParseException {
+    private Query BooleanQ(String[] searchTerms) throws IOException, ParseException {
 
         BooleanQuery.Builder b = new BooleanQuery.Builder();
 
-        String[] searchTerms = queryString.split(" ");
+        // String[] searchTerms = queryString.split(" ");
         for (String field : fields) {
             BooleanQuery.Builder fieldBoolBuilder = new BooleanQuery.Builder();
             PhraseQuery.Builder builder = new PhraseQuery.Builder();
@@ -114,14 +115,14 @@ public class Querier {
         return q;
     }
 
-    public void query(String queryString) throws IOException, ParseException {
+    public void query(String[] queryStringArray) throws IOException, ParseException {
         //
         System.out.println("-------------------");
-        System.out.println("Query: " + queryString);
+        System.out.println("Query: " + Array.toString(queryStringArray));
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
 
-        TopDocs results = searcher.search(BooleanQ(queryString), 5);
+        TopDocs results = searcher.search(BooleanQ(queryStringArray), 5);
         System.out.println("-------------------");
         for (int i = 0; i < Math.min(results.totalHits.value, 5); i++) {
             System.out.println(results.scoreDocs[i]);
@@ -136,6 +137,6 @@ public class Querier {
 
     public static void main(String[] args) throws IOException, ParseException {
         Querier q = new Querier("index");
-        q.query("const -array");
+        q.query(args);
     }
 }
