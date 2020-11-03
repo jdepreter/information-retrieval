@@ -1,3 +1,4 @@
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.nio.file.FileSystems;
@@ -9,6 +10,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.StopwordAnalyzerBase;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -37,10 +40,10 @@ public class Indexer {
     IndexWriter writer;
     Directory directory;
     IndexWriterConfig config;
-    StandardAnalyzer standardAnalyzer;
+    Analyzer standardAnalyzer;
 
     public Indexer(String relativeIndexPath) throws IOException {
-        standardAnalyzer = new StandardAnalyzer();
+        standardAnalyzer = new EnglishAnalyzer();
         Path path = FileSystems.getDefault().getPath(".", relativeIndexPath);
         directory = FSDirectory.open(path);
         config = new IndexWriterConfig(standardAnalyzer);
@@ -83,11 +86,25 @@ public class Indexer {
     }
 
     public static void main(String[] args) throws IOException, ParseException {
+
+        String[] pathnames;
+        // Creates a new File instance by converting the given pathname string
+        // into an abstract pathname
+        File f = new File("./dump/xml");
+
+        // Populates the array with names of files and directories
+        pathnames = f.list();
+
         Indexer i = new Indexer("index");
-        i.addXMLDoc("./dump/xml/63260064.xml");
-        i.addXMLDoc("./dump/xml/63260065.xml");
-        i.addXMLDoc("./dump/xml/63260067.xml");
+        // For each pathname in the pathnames array
+        for (String pathname : pathnames) {
+            // Print the names of files and directories
+            System.out.println(pathname);
+
+            i.addXMLDoc("./dump/xml/" + pathname);
+            
+        }
+
         i.close();
-        
     }
 }
