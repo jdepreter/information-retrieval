@@ -88,9 +88,10 @@ public class Indexer {
     public static void main(String[] args) throws IOException, ParseException {
 
         String[] pathnames;
+        String dirPath = args[0];
         // Creates a new File instance by converting the given pathname string
         // into an abstract pathname
-        File f = new File("./dump/xml");
+        File f = new File(dirPath);
 
         // Populates the array with names of files and directories
         pathnames = f.list();
@@ -101,7 +102,7 @@ public class Indexer {
             // Print the names of files and directories
             System.out.println(pathname);
 
-            i.addXMLDoc("./dump/xml/" + pathname);
+            i.addXMLDoc(dirPath + pathname);
             
         }
 
