@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Arrays;
+import java.lang.reflect.Array; 
 
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.lucene.document.Field;
@@ -118,7 +119,7 @@ public class Querier {
     public void query(String[] queryStringArray) throws IOException, ParseException {
         //
         System.out.println("-------------------");
-        System.out.println("Query: " + Array.toString(queryStringArray));
+        System.out.println("Query: " + Arrays.toString(queryStringArray));
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
 
@@ -136,7 +137,7 @@ public class Querier {
     }
 
     public static void main(String[] args) throws IOException, ParseException {
-        Querier q = new Querier("index");
-        q.query(args);
+        Querier q = new Querier(args[0]);
+        q.query(Arrays.copyOfRange(args, 1, Array.getLength(args)));
     }
 }
