@@ -13,6 +13,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.StopwordAnalyzerBase;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -31,6 +32,11 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.BooleanSimilarity;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
+import org.apache.lucene.search.similarities.Similarity;
+import org.apache.lucene.search.similarities.TFIDFSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.xml.sax.SAXException;
@@ -43,10 +49,11 @@ public class Indexer {
     Analyzer standardAnalyzer;
 
     public Indexer(String relativeIndexPath) throws IOException {
-        standardAnalyzer = new EnglishAnalyzer();
+        standardAnalyzer = new SimpleAnalyzer();
         Path path = FileSystems.getDefault().getPath(".", relativeIndexPath);
         directory = FSDirectory.open(path);
         config = new IndexWriterConfig(standardAnalyzer);
+        // config.setSimilarity(new ClassicSimilarity());
         writer = new IndexWriter(directory, config);
     }
 
@@ -100,7 +107,7 @@ public class Indexer {
         // For each pathname in the pathnames array
         for (String pathname : pathnames) {
             // Print the names of files and directories
-            System.out.println(pathname);
+            // System.out.println(pathname);
 
             i.addXMLDoc(dirPath + pathname);
             
