@@ -11,6 +11,7 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.analysis.StopwordAnalyzerBase;
+import org.apache.lucene.analysis.core.SimpleAnalyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -35,6 +36,9 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.similarities.BM25Similarity;
+import org.apache.lucene.search.similarities.BooleanSimilarity;
+import org.apache.lucene.search.similarities.ClassicSimilarity;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.analysis.Analyzer;
@@ -48,7 +52,7 @@ public class Querier {
     // String[] fields = { "questionTitle", "questionBody" };
 
     public Querier(String relativeIndexPath) throws IOException {
-        standardAnalyzer = new EnglishAnalyzer();
+        standardAnalyzer = new SimpleAnalyzer();
         Path path = FileSystems.getDefault().getPath(".", relativeIndexPath);
         directory = FSDirectory.open(path);
     }
@@ -58,7 +62,7 @@ public class Querier {
      * answer or in question
      */
 
-    private Query MultiFieldQuery(String queryString) throws ParseException, IOException {
+    private Query MultiFieldQuery(String[] queryString) throws ParseException, IOException {
         String[] temp = { "questionBody", "questionTitle", "answers", "acceptedAnswer" };
         Map<String, Float> mapding = new HashMap<String, Float>();
         mapding.put("questionBody", (float) 1);
@@ -66,7 +70,7 @@ public class Querier {
         mapding.put("answers", (float) 1);
         mapding.put("acceptedAnswer", (float) 2);
         MultiFieldQueryParser parser = new MultiFieldQueryParser(temp, standardAnalyzer, mapding);
-        Query q = parser.parse(queryString);
+        Query q = parser.parse(String.join(" ", queryString));
         System.out.println(q.toString());
         return q;
     }
@@ -118,13 +122,18 @@ public class Querier {
     public void query(String[] queryStringArray) throws IOException, ParseException {
         //
         System.out.println("-------------------");
-        System.out.println("Query: " + Array.toString(queryStringArray));
+        System.out.println("Query: " + Arrays.toString(queryStringArray));
+        
         IndexReader reader = DirectoryReader.open(directory);
         IndexSearcher searcher = new IndexSearcher(reader);
+        // searcher.setSimilarity(new ClassicSimilarity());
 
-        TopDocs results = searcher.search(BooleanQ(queryStringArray), 5);
+        TopDocs results = searcher.search(BooleanQ(queryStringArray), 69);
+        
         System.out.println("-------------------");
-        for (int i = 0; i < Math.min(results.totalHits.value, 5); i++) {
+        System.out.println("Total amount: " + results.totalHits.value);
+        System.out.println("-------------------");
+        for (int i = 0; i < Math.min(results.totalHits.value, 69); i++) {
             System.out.println(results.scoreDocs[i]);
             System.out.println(reader.document(results.scoreDocs[i].doc).get("path"));
             System.out.println(reader.document(results.scoreDocs[i].doc).get("questionTitle"));

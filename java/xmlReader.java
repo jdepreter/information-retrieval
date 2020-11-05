@@ -16,7 +16,7 @@ public class xmlReader {
             File inputFile = new File("./dump/xml/63260067.xml");
             Document doc = builder.parse(inputFile);
             doc.getDocumentElement().normalize();
-            System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+            // System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
             String AcceptedAnswerId = "0";
 
             Node nNode = doc.getDocumentElement().getFirstChild();
@@ -109,7 +109,7 @@ public class xmlReader {
             File inputFile = new File(inputPath);
             Document doc = builder.parse(inputFile);
             doc.getDocumentElement().normalize();
-            System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
+            // System.out.println("Root element :" + doc.getDocumentElement().getNodeName());
             String AcceptedAnswerId = "0";
 
             Node nNode = doc.getDocumentElement().getFirstChild();
