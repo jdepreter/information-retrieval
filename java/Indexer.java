@@ -103,7 +103,7 @@ public class Indexer {
         // Populates the array with names of files and directories
         pathnames = f.list();
 
-        Indexer i = new Indexer("index");
+        Indexer i = new Indexer(args[1]);
         // For each pathname in the pathnames array
         for (String pathname : pathnames) {
             // Print the names of files and directories
