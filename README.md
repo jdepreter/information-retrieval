@@ -22,10 +22,6 @@ Searching on multiple terms 'stack' and 'overflow':
 ```
 > java -jar Interface.jar querier ./index/ stack overflow
 ```
-Search on multiple words in one term 'stack overflow'
-```
-> java -jar Interface.jar querier ./index/ "stack overflow"
-```
 Search on exact match of term 'lucene'
 ```
 > java -jar Interface.jar querier ./index/ '"lucene"'
