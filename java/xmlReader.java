@@ -11,7 +11,6 @@ public class xmlReader {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
 
-        String inputFilePath = "./lorem.txt";
         try {
             File inputFile = new File("./dump/xml/63260067.xml");
             Document doc = builder.parse(inputFile);
@@ -42,7 +41,6 @@ public class xmlReader {
 
                 if (nNode.getNodeName() == "Answers") {
                     Node answer = nNode.getFirstChild();
-                    int index = 0;
                     while (answer != null) {
                         // Loop over all answers
                         if (answer.getNodeName() == "item") {
@@ -56,7 +54,6 @@ public class xmlReader {
                             }
                             // System.out.println(" ------------------- ");
                             // System.out.println(answer.getTextContent());
-                            index++;
                         }
                         answer = answer.getNextSibling();
                     }
