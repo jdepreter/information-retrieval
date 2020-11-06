@@ -98,7 +98,7 @@ public class Querier {
         return q;
     }
 
-    public void query(String[] queryStringArray) throws IOException, ParseException {
+    public void query(String[] queryStringArray, int maxAmount) throws IOException, ParseException {
         //
         System.out.println("-------------------");
         System.out.println("Query: " + Arrays.toString(queryStringArray));
@@ -107,12 +107,12 @@ public class Querier {
         IndexSearcher searcher = new IndexSearcher(reader);
         // searcher.setSimilarity(new ClassicSimilarity());
 
-        TopDocs results = searcher.search(BooleanQ(queryStringArray), 69);
+        TopDocs results = searcher.search(BooleanQ(queryStringArray), maxAmount);
         
         System.out.println("-------------------");
         System.out.println("Total amount: " + results.totalHits.value);
         System.out.println("-------------------");
-        for (int i = 0; i < Math.min(results.totalHits.value, 69); i++) {
+        for (int i = 0; i < Math.min(results.totalHits.value, maxAmount); i++) {
             System.out.println(results.scoreDocs[i]);
             System.out.println(reader.document(results.scoreDocs[i].doc).get("path"));
             System.out.println(reader.document(results.scoreDocs[i].doc).get("questionTitle"));
@@ -125,6 +125,6 @@ public class Querier {
 
     public static void main(String[] args) throws IOException, ParseException {
         Querier q = new Querier(args[0]);
-        q.query(Arrays.copyOfRange(args, 1, Array.getLength(args)));
+        q.query(Arrays.copyOfRange(args, 2, Array.getLength(args)), Integer.parseInt(args[1]));
     }
 }

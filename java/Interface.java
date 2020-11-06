@@ -20,7 +20,13 @@ public class Interface {
             
         }
         else if ("querier".equals(args[0])) {
-            if (Array.getLength(args) > 2) {
+            if (Array.getLength(args) > 3) {
+                try {
+                    Integer.parseInt(args[2]);
+                } catch (NumberFormatException e) {
+                    System.out.println("Max result amount is not a number");
+                    return;
+                }
                 Querier.main(Arrays.copyOfRange(args, 1, Array.getLength(args)));
             }
             else {
