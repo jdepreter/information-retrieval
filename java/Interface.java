@@ -1,28 +1,35 @@
-import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Constructor;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.Arrays;
-import java.lang.reflect.Array; 
+import java.lang.reflect.Array;
+import org.apache.lucene.queryparser.classic.ParseException;
+
 
 
 public class Interface {
-    public static void main(String[] args) throws IOException, ParseException {
+    public static void main(String[] args) throws IOException, IllegalArgumentException, ParseException {
         if (Array.getLength(args) == 0) {
-            return System.out.println("Please provide which mode you want to run in.");
+            System.out.println("Please provide which mode you want to run in.");
         }
-        else if (args[0] == "indexer") {
+        else if ("indexer".equals(args[0])) {
             if (Array.getLength(args) == 3) {
-                return Indexer.main(Arrays.copyOfRange(args, 1, Array.getLength(args)));
+                Indexer.main(Arrays.copyOfRange(args, 1, Array.getLength(args)));
             }
-            return System.out.println("Please provide the input and output directory.");
+            else {
+                System.out.println("Please provide the input and output directory.");
+            } 
+            
         }
-        else if (args[0] == "querier") {
+        else if ("querier".equals(args[0])) {
             if (Array.getLength(args) > 2) {
-                return Querier.main(Arrays.copyOfRange(args, 1, Array.getLength(args)));
+                Querier.main(Arrays.copyOfRange(args, 1, Array.getLength(args)));
             }
-            return System.out.println("Please provide the index directory and search terms you want to use.");
+            else {
+                System.out.println("Please provide the index directory and search terms you want to use.");
+            } 
         }
-        return System.out.println("Unsupported mode.");
+        else {
+            System.out.println("Unsupported mode " + args[0] + ".");
+        } 
+        
+    }
 }
